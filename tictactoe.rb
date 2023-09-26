@@ -3,7 +3,7 @@
 
 class Ticktactoe
     def initialize
-        @array = Array.new(3){Array.new(3,-1)};
+        @array = Array.new(3){Array.new(3,"x")};
         show()
         @ply= 0
         for i in 1..9
@@ -37,21 +37,27 @@ class Ticktactoe
                 @ply=0
             end
         end
+        puts "Its a draw"
     end
 
     private
 
     def show
-        for i in 0..2
-            for j in 0..2
-                print "#{@array[i][j]} "
-            end
-            puts ""
-        end
-        puts ""
+        # for i in 0..2
+        #     for j in 0..2
+        #         print "#{@array[i][j]} "
+        #     end
+        #     puts ""
+        # end
+        # puts ""
+        puts "#{@array[0][0]} | #{@array[0][1]} | #{@array[0][2]}"
+        puts "--+---+--"
+        puts "#{@array[1][0]} | #{@array[1][1]} | #{@array[1][2]}"
+        puts "--+---+--"
+        puts "#{@array[2][0]} | #{@array[2][1]} | #{@array[2][2]}"
     end
     def insert1(row, col)
-        if row<0||col<0||row>2||col>2||@array[row][col]!=-1
+        if row<0||col<0||row>2||col>2||@array[row][col]!="x"
             puts "Illegal move try again"
             return 0
         end
@@ -64,7 +70,7 @@ class Ticktactoe
         return 1
     end
     def insert2(row, col)
-        if row<0||col<0||row>2||col>2||@array[row][col]!=-1
+        if row<0||col<0||row>2||col>2||@array[row][col]!="x"
             puts "Illegal move try again"
             return 0
         end
