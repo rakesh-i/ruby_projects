@@ -1,13 +1,48 @@
 #!/usr/bin/env ruby
 #frozen_string_literal: true
 
+require 'csv'
+
 class Hangman
   def initialize
+    system("clear")
     file_path_raw = "Hangman/google-10000-english-no-swears.txt"
     file_path_modified = "Hangman/modified.txt"
     modify(file_path_raw,file_path_modified)
-    rand_word = randomWord(file_path_modified).split("")
-    play(rand_word)
+    rand_word, temp, strike= loadSave()
+    play(rand_word, temp, strike)
+  end
+
+  def loadSave
+    savefile = CSV.open("Hangman/save.csv", "r", headers:true, header_converters: :symbol)
+    data = savefile.read
+    puts "Sl  Date        Progress             Strikes"
+    puts "============================================"
+    puts "0    -----------NEW GAME-------------"
+    data.each.with_index do |row, index|
+      prog = row[:progress].to_s
+      n = prog.length
+      new_progress = ""
+      for i in 0..12
+        if(i<n)
+          new_progress += "#{prog[i]} "
+        else
+          new_progress +="  "
+        end
+      end
+      puts "#{index+1}   #{row[:date]}   #{new_progress}#{row[:strike]}"
+    end
+    choice = gets.chomp.to_i
+    if choice==0
+      word = randomWord("Hangman/modified.txt")
+      word_lenght = word.length
+      temp = Array.new(word_lenght)
+      for i in 1..word_lenght
+        temp[i-1] = '_'
+      end
+      return word, temp, 0
+    end
+    return data[choice-1][:randomword], data[choice-1][:progress].split(""), data[choice-1][:strike].to_i
   end
 
   def modify(file_path_raw, file_path_modified)
@@ -39,22 +74,21 @@ class Hangman
     random_word
   end
 
-  def play(rand_word)
+  def play(rand_word, temp, strike)
     system("clear")
     word_dup = rand_word.dup
     word_lenght = word_dup.length
-    temp = Array.new(word_lenght)
     puts "Six strikes and you lose"
     for i in 1..word_lenght
-      print "_ "
-      temp[i-1] = '_'
+      print "#{temp[i-1]} "
     end
     puts ""
-    strike = 0
+    draw(strike)
+
     while strike<6
-      guess = gets.chomp
+      guess = gets.chomp.downcase
       system("clear")
-      puts "Six strikes and you lose"
+      puts "Press 1 to save the progress"
       flag = 0
       for i in 0..word_lenght-1
         if guess == word_dup[i]
@@ -70,11 +104,11 @@ class Hangman
         strike +=1
       end
       draw(strike)
-      if temp==word_dup
+      if temp.join==word_dup
         break
       end
     end
-    puts word_dup.join
+    puts word_dup
   end
 
   def draw(strike)
