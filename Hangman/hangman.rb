@@ -6,7 +6,8 @@ class Hangman
     file_path_raw = "Hangman/google-10000-english-no-swears.txt"
     file_path_modified = "Hangman/modified.txt"
     modify(file_path_raw,file_path_modified)
-    @@rand_word = randomWord(file_path_modified)
+    rand_word = randomWord(file_path_modified).split("")
+    play(rand_word)
   end
 
   def modify(file_path_raw, file_path_modified)
@@ -36,6 +37,105 @@ class Hangman
       end
     end
     random_word
+  end
+
+  def play(rand_word)
+    system("clear")
+    word_dup = rand_word.dup
+    word_lenght = word_dup.length
+    temp = Array.new(word_lenght)
+    puts "Six strikes and you lose"
+    for i in 1..word_lenght
+      print "_ "
+      temp[i-1] = '_'
+    end
+    puts ""
+    strike = 0
+    while strike<6
+      guess = gets.chomp
+      system("clear")
+      puts "Six strikes and you lose"
+      flag = 0
+      for i in 0..word_lenght-1
+        if guess == word_dup[i]
+          flag = 1
+          temp[i] = guess
+        end
+      end
+      for i in 1..word_lenght
+        print "#{temp[i-1]} "
+      end
+      puts ""
+      if flag==0
+        strike +=1
+      end
+      draw(strike)
+      if temp==word_dup
+        break
+      end
+    end
+    puts word_dup.join
+  end
+
+  def draw(strike)
+    case strike
+    when 0
+      puts "  +---+"
+      puts "  |   |"
+      puts "      |"
+      puts "      |"
+      puts "      |"
+      puts "      |"
+      puts "========"
+    when 1
+      puts "  +---+"
+      puts "  |   |"
+      puts "  O   |"
+      puts "      |"
+      puts "      |"
+      puts "      |"
+      puts "========"
+    when 2
+      puts "  +---+"
+      puts "  |   |"
+      puts "  O   |"
+      puts "  |   |"
+      puts "      |"
+      puts "      |"
+      puts "========"
+    when 3
+      puts "  +---+"
+      puts "  |   |"
+      puts "  O   |"
+      puts " /|   |"
+      puts "      |"
+      puts "      |"
+      puts "========"
+    when 4
+      puts "  +---+"
+      puts "  |   |"
+      puts "  O   |"
+      puts " /|\\  |"
+      puts "      |"
+      puts "      |"
+      puts "========"
+    when 5
+      puts "  +---+"
+      puts "  |   |"
+      puts "  O   |"
+      puts " /|\\  |"
+      puts " /    |"
+      puts "      |"
+      puts "========"
+    when 6
+      puts "  +---+"
+      puts "  |   |"
+      puts "  O   |"
+      puts " /|\\  |"
+      puts " / \\  |"
+      puts "      |"
+      puts "========"
+    end
   end
 
 end
