@@ -18,7 +18,7 @@ class Hangman
     data = savefile.read
     puts "Sl  Date        Progress             Strikes"
     puts "============================================"
-    puts "0    -----------NEW GAME-------------"
+    puts "0     -----------NEW GAME-------------"
     data.each.with_index do |row, index|
       prog = row[:progress].to_s
       n = prog.length
@@ -32,6 +32,8 @@ class Hangman
       end
       puts "#{index+1}   #{row[:date]}   #{new_progress}#{row[:strike]}"
     end
+    puts "============================================"
+    print "Enter the number curresponding to the saves to play: "
     choice = gets.chomp.to_i
     if choice==0
       word = randomWord("Hangman/modified.txt")
@@ -43,6 +45,20 @@ class Hangman
       return word, temp, 0
     end
     return data[choice-1][:randomword], data[choice-1][:progress].split(""), data[choice-1][:strike].to_i
+  end
+
+  def saveGame(progress, word, strike)
+    progress = progress.join
+    date = Time.now.strftime("%m/%d/%Y")
+    data_to_append = {date:date, randomWord:word, progress:progress, strike:strike}
+    CSV.open("Hangman/save.csv", "a", headers:true, header_converters: :symbol) do |csv|
+      csv<<data_to_append.values
+    end
+    puts "Press 1 to return"
+    until gets.chomp=="1"
+      puts "Press 1 to return"
+    end
+    play(word, progress.split(""), strike.to_i)
   end
 
   def modify(file_path_raw, file_path_modified)
@@ -78,7 +94,8 @@ class Hangman
     system("clear")
     word_dup = rand_word.dup
     word_lenght = word_dup.length
-    puts "Six strikes and you lose"
+    #puts rand_word
+    puts "Press 1 to save the progress"
     for i in 1..word_lenght
       print "#{temp[i-1]} "
     end
@@ -87,6 +104,10 @@ class Hangman
 
     while strike<6
       guess = gets.chomp.downcase
+      if guess== "1"
+        saveGame(temp, rand_word, strike)
+        exit
+      end
       system("clear")
       puts "Press 1 to save the progress"
       flag = 0
