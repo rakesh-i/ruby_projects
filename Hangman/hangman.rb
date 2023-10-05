@@ -8,14 +8,32 @@ class Hangman
     system('clear')
     @@file_path_raw = 'google-10000-english-no-swears.txt'
     @@file_path_modified = 'modified.txt'
-    modify
-    rand_word, temp, strike = load_save
-    play(rand_word, temp, strike)
+    @@save_path = 'save.csv'
+    delete_previous_saves()
+    modify()
+    game()
   end
 
+  def game
+    begin
+      system("clear")
+      rand_word, temp, strike = load_save
+      #puts rand_word
+      play(rand_word, temp, strike)
+      puts "Press 'y' to play again and 'n' to exit"
+    end while gets.chomp.downcase!='n'
+  end
+  def delete_previous_saves
+    header = CSV.open(@@save_path, 'r', &:readline)
+    CSV.open(@@save_path, 'w') do |csv|
+      csv << header
+    end
+  end
   def load_save
     savefile = CSV.open('save.csv', 'r', headers: true, header_converters: :symbol)
     data = savefile.read
+    count = 0
+    draw(6)
     puts 'Sl  Date        Progress             Strikes'
     puts '============================================'
     puts '0     -----------NEW GAME-------------'
@@ -31,10 +49,15 @@ class Hangman
                         end
       end
       puts "#{index + 1}   #{row[:date]}   #{new_progress}#{row[:strike]}"
+      count+=1
     end
     puts '============================================'
     print 'Enter the number curresponding to the saves to play: '
     choice = gets.chomp.to_i
+    until choice<=count||choice<0
+      puts "invalid input try again"
+      choice = gets.chomp.to_i
+    end
     if choice.zero?
       word = random_word
       word_lenght = word.length
@@ -44,13 +67,13 @@ class Hangman
       end
       return word, temp, 0
     end
-    [data[choice - 1][:random_word], data[choice - 1][:progress].split(''), data[choice - 1][:strike].to_i]
+    return data[choice - 1][:randomword], data[choice - 1][:progress].split(''), data[choice - 1][:strike].to_i
   end
 
   def save_game(progress, word, strike)
     progress = progress.join
     date = Time.now.strftime('%m/%d/%Y')
-    data_to_append = { date: date, random_word: word, progress: progress, strike: strike }
+    data_to_append = { date: date, randomword: word, progress: progress, strike: strike }
     CSV.open('save.csv', 'a', headers: true, header_converters: :symbol) do |csv|
       csv << data_to_append.values
     end
@@ -91,8 +114,7 @@ class Hangman
     system('clear')
     word_dup = rand_word.dup
     word_lenght = word_dup.length
-    # puts rand_word
-    puts 'Press 1 to save the progress'
+    puts 'Press 1 to save the progress and 2 to exit'
     (1..word_lenght).each do |i|
       print "#{temp[i - 1]} "
     end
@@ -105,8 +127,12 @@ class Hangman
         save_game(temp, rand_word, strike)
         exit
       end
+      if guess == '2'
+        game()
+        exit
+      end
       system('clear')
-      puts 'Press 1 to save the progress'
+      puts 'Press 1 to save the progress and 2 to exit'
       flag = 0
       (0..word_lenght - 1).each do |i|
         if guess == word_dup[i]
