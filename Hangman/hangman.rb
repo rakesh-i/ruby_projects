@@ -22,6 +22,7 @@ class Hangman
       play(rand_word, temp, strike)
       puts "Press 'y' to play again and 'n' to exit"
     end while gets.chomp.downcase!='n'
+    exit
   end
   def delete_previous_saves
     header = CSV.open(@@save_path, 'r', &:readline)
@@ -81,6 +82,7 @@ class Hangman
     puts 'Press 1 to return'
     puts 'Press 1 to return' until gets.chomp == '1'
     play(word, progress.split(''), strike.to_i)
+    game
   end
 
   def modify
@@ -125,7 +127,7 @@ class Hangman
       guess = gets.chomp.downcase
       if guess == '1'
         save_game(temp, rand_word, strike)
-        exit
+        game
       end
       if guess == '2'
         game()
