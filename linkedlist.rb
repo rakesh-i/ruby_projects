@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 class Node
   attr_accessor :data, :next
+
   def initialize(data)
     @data = data
     @next = nil
@@ -7,7 +10,6 @@ class Node
 end
 
 class LinkedList
-
   def initialize
     @head = nil
     @count = -1
@@ -16,149 +18,133 @@ class LinkedList
 
   def append(data)
     new_node = Node.new(data)
-    @count+=1
-    if @head==nil
+    @count += 1
+    if @head.nil?
       @head = new_node
-      @tail = new_node
     else
       @tail.next = new_node
-      @tail = new_node
     end
+    @tail = new_node
   end
 
   def prepend(data)
     new_node = Node.new(data)
-    @count+=1
-    temp = @head
+    @count += 1
     new_node.next = @head
     @head = new_node
   end
 
   def insert_at(data, idx)
-    if(idx==0)
+    if idx.zero?
       prepend(data)
       return
     end
-    if idx>@count
+    if idx > @count
       append(data)
       return
     end
     new_node = Node.new(data)
     temp = @head
     cur = 0
-    while cur!=idx-1
+    while cur != idx - 1
       temp = temp.next
-      cur+=1
+      cur += 1
     end
     temp1 = temp.next
     temp.next = new_node
     new_node.next = temp1
-    @count+=1
-    return
+    @count += 1
+    nil
   end
 
   def contains?(data)
     temp = @head
     while temp
-      if temp.data==data
-        return true
-      end
+      return true if temp.data == data
+
       temp = temp.next
     end
-    return false
+    false
   end
 
   def at(idx)
     temp = @head
-    if idx<1||idx>@count
-      return"Out of range"
-    end
+    return 'Out of range' if idx < 1 || idx > @count
+
     i = 0
-    while i!=idx
+    while i != idx
       temp = temp.next
-      i+=1
+      i += 1
     end
-    return temp.data
+    temp.data
   end
 
   def find(data)
     temp = @head
     itr = 0
     while temp
-      if temp.data==data
-        return itr
-      end
-      itr+=1
+      return itr if temp.data == data
+
+      itr += 1
       temp = temp.next
     end
-    return "Out of range"
+    'Out of range'
   end
 
   def remove_at(n)
-    if n>@count|| n<0
-      puts "Out of range"
-      return
+    if n > @count || n.negative?
+      puts 'Out of range'
     else
       temp = @head
-      if n==0
-        @head = temp.next;
+      if n.zero?
+        @head = temp.next
         @tail = nil
-        @count-=1
+        @count -= 1
         puts @count
         return
       end
       cur = 0
-      while cur!=n-1
+      while cur != n - 1
         temp = temp.next
-        cur+=1
+        cur += 1
       end
-      if n==@count
-        @tail = temp
-      end
+      @tail = temp if n == @count
       temp1 = temp.next.next
       temp.next = temp1
-      @count-=1
-      return
+      @count -= 1
     end
+    nil
   end
 
   def pop
-    if @count>=0
-      remove_at(@count)
-    end
+    return unless @count >= 0
+
+    remove_at(@count)
   end
 
   def tail
-    if @tail
-      return @tail.data
-    else
-      return nil
-    end
+    return unless @tail
+
+    @tail.data
   end
 
   def head
-    if @head
-      return @head.data
-    else
-      return nil
-    end
+    return unless @head
 
+    @head.data
   end
 
   def to_s
     temp = @head
-    string = ""
+    string = ''
     while temp
-      string += temp.data.to_s+'->'
+      string += "#{temp.data}->"
       temp = temp.next
     end
-    string+="nil"
+    string += 'nil'
     string
   end
-
-
 end
-
 
 list = LinkedList.new
 
@@ -169,10 +155,9 @@ list.append(5)
 list.prepend(0)
 list.append(6)
 list.append(7)
-list.insert_at(-1,0)
-list.insert_at(4,5)
-list.insert_at(8,34)
+list.insert_at(-1, 0)
+list.insert_at(4, 5)
+list.insert_at(8, 34)
 list.pop
-
 
 puts list
