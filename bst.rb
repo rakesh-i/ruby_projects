@@ -92,36 +92,122 @@ class BST
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
 
-  def build_tree(array)
-    @root = build(array)
-  end
 
-  def build(array, root = @root)
+  def build_tree(array, root = @root)
     return nil if array.empty?
     mid = (array.length/2).to_i
-    root = Node.new(array[mid])
-    root.left = build(array[0...(mid)])
-    root.right = build(array[(mid+1)..-1])
+    if @root.nil?
+      @root = Node.new(array[mid])
+      root = @root
+    else
+      root = Node.new(array[mid])
+    end
+    root.left = build_tree(array[0...(mid)])
+    root.right = build_tree(array[(mid+1)..-1])
     return root
+  end
+
+  def inorder(root = @root)
+    if root.nil?
+      return
+    end
+    inorder(root.left)
+    puts root.data
+    inorder(root.right)
+  end
+
+  def sorted(root = @root, array)
+    if root.nil?
+      return
+    end
+    sorted(root.left, array)
+    array.push(root.data)
+    sorted(root.right, array)
+  end
+
+  def preorder(root = @root)
+    if root.nil?
+      return
+    end
+    puts root.data
+    preorder(root.left)
+    preorder(root.right)
+  end
+
+  def postorder(root = @root)
+    if root.nil?
+      return
+    end
+    postorder(root.left)
+    postorder(root.right)
+    puts root.data
+  end
+
+  def levelorder(root=@root)
+    return if root.nil?
+    queue = []
+    queue.push(root)
+    while !queue.empty?
+      cur = queue.shift
+      puts cur.data
+      if cur.left
+        queue.push(cur.left)
+      end
+      if cur.right
+        queue.push(cur.right)
+      end
+    end
+  end
+
+  def rebalance(root=@root)
+    array = []
+    sorted(root, array)
+    p array
+    @root = nil
+    build_tree(array)
+  end
+
+  def balanced?(root = @root)
+    if root.nil?
+      return true
+    end
+    left_height = height(root.left)
+    right_height = height(root.right)
+
+    if (left_height-right_height).abs<=1 && balanced?(root.left) && balanced?(root.right)
+      return true
+    end
+    return false
+  end
+
+  def height(root=@root)
+    if root.nil?
+      return 0
+    end
+    left = height(root.left)
+    right = height(root.right)
+
+    return [left, right].max+1
   end
 
 end
 
 tree = BST.new
-tree.insert(4)
-tree.insert(6)
-tree.insert(7)
-tree.insert(5)
-tree.insert(2)
-tree.insert(3)
-tree.insert(1)
-# array = [5,3,6,2,4,7]
-# array = array.sort.uniq
-# tree.build_tree(array)
+array = Array.new(15){rand(1..100)}.sort.uniq
+tree.build_tree(array)
 
-tree.pretty_print()
-# tree.del(3)
-# tree.pretty_print()
-# prev, cur = tree.find(7)
-# puts prev.data
-# puts cur.data
+tree.insert(123)
+tree.insert(144)
+tree.insert(355)
+tree.insert(524)
+tree.pretty_print
+puts tree.balanced?
+tree.rebalance
+tree.pretty_print
+puts tree.balanced?
+puts "Preorder"
+tree.preorder
+puts "Inorder"
+tree.inorder
+puts "Postorder"
+tree.postorder
