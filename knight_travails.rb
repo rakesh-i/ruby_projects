@@ -86,7 +86,7 @@ class Knight
       end
       count+=1
     end
-    puts count
+    count
   end
 
   def trace(target, array, root=@root)
@@ -112,10 +112,10 @@ class Knight
 end
 
 
-k = Knight.new
+# k = Knight.new
 
-k.helper([3,3],[0,0])
+# k.helper([3,3],[0,0])
 
-array = []
-k.trace([0,0], array)
-p array
+# array = []
+# k.trace([0,0], array)
+# p array
