@@ -5,13 +5,62 @@ class Connect4
     @player2 = '◼'
     @grid = Array.new(6){Array.new(7, @circle_empty)}
     @col_fill = Array.new(7, 0)
+    system('clear')
+    show_grid
+  end
+
+  def play
+    count = 0
+    p1 = '◼'
+    p2 = '●'
+    flag = 0
+    while count<42
+      if flag==0
+        puts
+        print "Player 1 turn "
+        col = gets.chomp.to_i
+        system('clear')
+        x = drop(p1, col)
+        show_grid
+        flag = 1
+        if(x==true)
+          puts "#{p1} has won"
+          break
+        elsif(x=="Invalid")
+          puts "Invalid input try again"
+          flag = 0
+        end
+
+      else
+        puts
+        print "Player 2 turn "
+        col = gets.chomp.to_i
+        system('clear')
+        x = drop(p2, col)
+        show_grid
+        flag = 0
+        if x==true
+          puts "#{p2} has won"
+          break
+        elsif(x=="Invalid")
+          puts "Invalid input try again"
+          flag = 1
+        end
+
+
+      end
+    end
   end
 
   def show_grid
     puts
+    for i in 0..6
+      print "#{i+1}  "
+    end
+    puts
     for i in 0..5
       for j in 0..6
-        print "#{@grid[i][j]} "
+        print "#{@grid[i][j]}  "
       end
       puts
     end
@@ -19,12 +68,16 @@ class Connect4
   end
 
   def drop(player, col)
-    if col>6 || col<=0 || @col_fill[col-1]>=6
+    if col>7 || col<=0 || @col_fill[col-1]>=6
       return "Invalid"
     else
       row = 5-@col_fill[col-1]
       @grid[row][col-1] = player
       @col_fill[col-1]+=1
+      x = check([6-@col_fill[col-1], col-1])
+      if x==true
+        return true
+      end
     end
     nil
   end
@@ -81,7 +134,7 @@ class Connect4
     col = cur[1]
     player = @grid[row][col]
     count = 0
-    while row<6&&col<7
+    while row>=0&&col<7
       if @grid[row][col]==player
         count+=1
         row-=1
@@ -96,7 +149,8 @@ class Connect4
     count-=1
     row = cur[0]
     col = cur[1]
-    while row>=0&&col>=0
+
+    while row<6&&col>=0
       if @grid[row][col]==player
         count+=1
         row+=1
@@ -147,7 +201,6 @@ class Connect4
     row = cur[0]
     col = cur[1]
     player = @grid[row][col]
-    p player
     count = 0
     while col<7
       if @grid[row][col]==player
@@ -177,3 +230,8 @@ class Connect4
   end
 
 end
+
+
+game = Connect4.new
+
+game.play
